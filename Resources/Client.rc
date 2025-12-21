@@ -1,0 +1,46 @@
+#include <Windows.h>
+
+#pragma code_page(1251)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+
+#define VS_FF_NONE 0x0L
+
+#define BASE_FLAGS VS_FF_NONE
+
+#if defined(_DEBUG)
+#define DEBUG_FLAGS VS_FF_DEBUG
+#else
+#define DEBUG_FLAGS VS_FF_NONE
+#endif
+
+#define FILE_FLAGS (BASE_FLAGS | DEBUG_FLAGS)
+
+VS_VERSION_INFO VERSIONINFO
+  FILEVERSION VOTVMP_VERSION_MAJOR, VOTVMP_VERSION_MINOR, VOTVMP_VERSION_PATCH, VOTVMP_VERSION_TWEAK
+  PRODUCTVERSION VOTVMP_VERSION_MAJOR, VOTVMP_VERSION_MINOR, VOTVMP_VERSION_PATCH, VOTVMP_VERSION_TWEAK
+  FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+  FILEFLAGS FILE_FLAGS
+  FILEOS VOS__WINDOWS32
+  FILETYPE VFT_DLL
+  FILESUBTYPE 0x0L
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904b0"
+    BEGIN
+      VALUE "CompanyName", "RFVOTV | votv-fans.ru"
+      VALUE "ProductName", "VotV-MP Project"
+      VALUE "ProductVersion", VOTVMP_VERSION
+      VALUE "LegalCopyright", "Free to use, edit and distribute keeping authority to RFVOTV Community"
+
+      VALUE "InternalName", "Client"
+      VALUE "OriginalFilename", "VotV-MP-Client.dll"
+      VALUE "FileVersion", VOTVMP_VERSION
+      VALUE "FileDescription", "VotV-MP Project. Client DLL"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0419, 1251 // Russian, Cyrillic char set
+  END
+END
