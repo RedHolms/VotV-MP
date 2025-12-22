@@ -9,18 +9,24 @@
 //  unwanted for C++, so let's use this.
 #define nullhandle nullptr
 
-#define UNREACHABLE() do { __debugbreak(); } while(1)
+#define UNREACHABLE()                                                                              \
+  do {                                                                                             \
+    __debugbreak();                                                                                \
+  } while (1)
+
+#define NONCOPYABLE_CLASS(ClassName)                                                               \
+  ClassName(const ClassName&) = default;                                                           \
+  ClassName& operator=(const ClassName&) = default
 
 // Mark singleton-like classes that shouldn't be movable or copyable
 #define IMMOVABLE_CLASS(ClassName)                                                                 \
-  ClassName(const ClassName&) = delete;                                                            \
-  ClassName& operator=(const ClassName&) = delete;                                                 \
+  NONCOPYABLE_CLASS(ClassName);                                                                    \
   ClassName(ClassName&&) = delete;                                                                 \
-  ClassName& operator=(ClassName&&) = delete;
+  ClassName& operator=(ClassName&&) = delete
 
 // Mark static classes (classes without instances)
 #define STATIC_CLASS(ClassName)                                                                    \
-  IMMOVABLE_CLASS(ClassName)                                                                       \
+  IMMOVABLE_CLASS(ClassName);                                                                      \
   ClassName() = delete;                                                                            \
   ~ClassName() = delete
 

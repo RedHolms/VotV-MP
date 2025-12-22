@@ -47,11 +47,11 @@ FetchContent_MakeAvailable(fmtlib)
 file(GLOB_RECURSE SOURCES "Source/Common/*" "Source/Logging/*" "Source/Network/*")
 
 # Client-only sources
-file(GLOB_RECURSE CLIENT_SOURCES "Client/*")
+file(GLOB_RECURSE CLIENT_SOURCES "Source/Client/*")
 set(CLIENT_SOURCES "Resources/Client.rc" ${SOURCES} ${CLIENT_SOURCES})
 
 # Launcher-only sources
-file(GLOB_RECURSE LAUNCHER_SOURCES "Launcher/*")
+file(GLOB_RECURSE LAUNCHER_SOURCES "Source/Launcher/*")
 set(LAUNCHER_SOURCES "Resources/Launcher.rc" ${LAUNCHER_SOURCES})
 
 # Register targets
@@ -62,7 +62,10 @@ set(ALL_TARGETS Client Launcher)
 # Apply shared options to all targets
 foreach(TARGET IN LISTS ALL_TARGETS)
   # Pre-compile and auto-include Stdafx.hpp
-  target_sources(${TARGET} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source/Stdafx.hpp")
+  target_sources(${TARGET} PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/Stdafx.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/Stdafx.hpp"
+  )
   target_precompile_headers(${TARGET} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source/Stdafx.hpp")
   if(MSVC_LIKE_CC)
     target_compile_options(${TARGET} PRIVATE "/FI${CMAKE_CURRENT_SOURCE_DIR}/Source/Stdafx.hpp")
@@ -77,6 +80,13 @@ foreach(TARGET IN LISTS ALL_TARGETS)
   target_compile_definitions(${TARGET} PRIVATE
     _PROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/Source/"
   )
+
+  # OS
+  if(WIN32)
+    target_compile_definitions(${TARGET} PRIVATE _OS_WINDOWS=1 _OS_LINUX=0)
+  elseif(LINUX)
+    target_compile_definitions(${TARGET} PRIVATE _OS_WINDOWS=0 _OS_LINUX=1)
+  endif()
 
   # Link with fmt library
   target_link_libraries(${TARGET} PRIVATE fmt::fmt)

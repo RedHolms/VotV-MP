@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../../Network/IP.hpp"
+#include "../../Network/Socket.hpp"
 #include <memory>
 #include <stdint.h>
 #include <string>
-#include "IP.hpp"
-#include "Socket.hpp"
 
 class NetGame {
 public:
