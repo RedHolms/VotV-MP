@@ -14,11 +14,13 @@ void TCPSocket::Listen(int backlog) {
   listen(m_handle, backlog);
 }
 
-TCPSocket TCPSocket::Accept() {}
+// TCPSocket TCPSocket::Accept() {
+//
+// }
 
 void TCPSocket::Connect(SocketAddress const& address) {
   auto systemAddress = address.ToSystem();
   connect(m_handle, &systemAddress.addr, systemAddress.addrLen);
 }
 
-bool TCPSocket::IsConnected() {}
+// bool TCPSocket::IsConnected() {}

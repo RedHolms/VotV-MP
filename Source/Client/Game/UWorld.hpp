@@ -1,30 +1,28 @@
 #pragma once
 
-#include "base.hpp"
-#include "FString.hpp"
+#include "Client/Game/FString.hpp"
+#include "Client/Game/Game.hpp"
 
 class UWorld {
 public:
-  struct Meta;
-
   struct InitializationValues {
     char __Padding00[8];
   };
 
 public:
-  inline FString GetMapName();
+  forceinline FString GetMapName();
+  forceinline void InitWorld(InitializationValues initValues);
 };
 
-struct UWorld::Meta {
-  static constexpr inline Game::Function<FString(UWorld::*)()> GetMapName {
-    "?GetMapName@UWorld@@QEBA?BVFString@@XZ", 0x2F6AF30
-  };
+// clang-format off
+DEFINE_SYMBOL("?GetMapName@UWorld@@QEBA?BVFString@@XZ", 0x2F6AF30, FString(UWorld::*)());
+DEFINE_SYMBOL("?InitWorld@UWorld@@QEAAXUInitializationValues@1@@Z", 0x2F6D550, void(UWorld::*)(UWorld::InitializationValues));
+// clang-format on
 
-  static constexpr inline Game::Function<void(UWorld::*)(InitializationValues)> InitWorld {
-    "?InitWorld@UWorld@@QEAAXUInitializationValues@1@@Z", 0x2F6D550
-  };
-};
+forceinline FString UWorld::GetMapName() {
+  return Game::CallSymbol<{ "?GetMapName@UWorld@@QEBA?BVFString@@XZ" }>(this);
+}
 
-FString UWorld::GetMapName() {
-  return Meta::GetMapName(this);
+forceinline void UWorld::InitWorld(InitializationValues initValues) {
+  Game::CallSymbol<{ "?InitWorld@UWorld@@QEAAXUInitializationValues@1@@Z" }>(this, initValues);
 }

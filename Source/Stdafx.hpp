@@ -9,6 +9,8 @@
 //  unwanted for C++, so let's use this.
 #define nullhandle nullptr
 
+#define forceinline __forceinline
+
 #define UNREACHABLE()                                                                              \
   do {                                                                                             \
     __debugbreak();                                                                                \

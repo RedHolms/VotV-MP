@@ -25,6 +25,7 @@ BraceWrapping:
   BeforeCatch: true
   BeforeElse: true
   IndentBraces: false
+BreakBeforeTemplateCloser: true
 PackConstructorInitializers: CurrentLine
 BreakConstructorInitializers: BeforeColon
 SpaceBeforeCpp11BracedList: true

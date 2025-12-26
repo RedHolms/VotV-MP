@@ -14,7 +14,7 @@ public:
   constexpr RawSocket() : m_handle(INVALID_SOCKET) {}
   constexpr explicit RawSocket(SOCKET handle) : m_handle(handle) {}
 
-  constexpr ~RawSocket() {
+  inline ~RawSocket() {
     Invalidate();
   }
 

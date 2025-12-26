@@ -8,14 +8,11 @@
 struct IPv6 {
   static constexpr IPVersion Version = IPVersion::v6;
 
-  static constexpr std::optional<IPv6> Parse(std::string_view const& addr);
+  static constexpr std::optional<IPv6> Parse(std::string_view const& addr) noexcept;
 
   uint8_t addr[16] = { 0 };
 
   constexpr std::string ToString() const noexcept;
-
-  static constexpr IPv6 Unspecified = Parse("::");
-  static constexpr IPv6 LocalHost = Parse("::1");
 };
 
 constexpr std::optional<IPv6> IPv6::Parse(std::string_view const& addr) noexcept {

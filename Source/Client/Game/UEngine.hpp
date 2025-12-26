@@ -1,16 +1,18 @@
 #pragma once
 
-#include "base.hpp"
+#include "Game.hpp"
 
 class IEngineLoop;
 
 class UEngine {
 public:
-  struct Meta;
+  forceinline void Init(IEngineLoop* engineLoop);
 };
 
-struct UEngine::Meta {
-  static constexpr inline Game::Function<void(UEngine::*)(IEngineLoop*)> Init {
-    "?Init@UEngine@@UEAAXPEAVIEngineLoop@@@Z", 0x2F183F0
-  };
-};
+// clang-format off
+DEFINE_SYMBOL("?Init@UEngine@@UEAAXPEAVIEngineLoop@@@Z", 0x2F183F0, void(UEngine::*)(IEngineLoop*));
+// clang-format on
+
+forceinline void UEngine::Init(IEngineLoop* engineLoop) {
+  Game::CallSymbol<{ "?Init@UEngine@@UEAAXPEAVIEngineLoop@@@Z" }>(this, engineLoop);
+}

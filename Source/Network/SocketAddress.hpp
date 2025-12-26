@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IP.hpp"
+#include "Network/IP.hpp"
 #include <WS2tcpip.h>
 #include <WinSock2.h>
 #include <stdexcept>

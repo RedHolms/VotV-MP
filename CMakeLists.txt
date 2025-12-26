@@ -12,6 +12,10 @@ add_compile_definitions(
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   add_compile_options("/utf-8")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  message(WARNING
+    "Clang seems to fuck up __builtin_FILE() behaviour in constructors, thus logging"
+    " is a bit broken when using clang. Until it's fixed, you must compile with MSVC")
 endif()
 
 if((CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") OR (CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC"))
@@ -42,6 +46,7 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(fmtlib)
+add_subdirectory("ThirdParty")
 
 # Common source files (shared between client and servers)
 file(GLOB_RECURSE SOURCES "Source/Common/*" "Source/Logging/*" "Source/Network/*")
@@ -92,6 +97,19 @@ foreach(TARGET IN LISTS ALL_TARGETS)
   target_link_libraries(${TARGET} PRIVATE fmt::fmt)
 endforeach()
 
+target_link_libraries(Client PRIVATE
+  HDE
+  Ws2_32.lib
+)
+
+set_target_properties(Client PROPERTIES
+  OUTPUT_NAME "VotV-MP-Client"
+)
+
 target_link_libraries(Launcher PRIVATE
   Shlwapi.lib
+)
+
+set_target_properties(Launcher PROPERTIES
+  OUTPUT_NAME "VotV-MP"
 )

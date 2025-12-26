@@ -1,26 +1,40 @@
 #pragma once
 
-#include "base.hpp"
-#include "FLinearColor.hpp"
+#include "Client/Game/FLinearColor.hpp"
+#include "Client/Game/Game.hpp"
 
 class AHUD {
 public:
-  struct Meta;
+  forceinline void DrawHUD();
 
-public:
-  inline void DrawLine(float X, float Y, float eX, float eY, FLinearColor color, float thickness);
+  forceinline void DrawLine(
+    float X,
+    float Y,
+    float eX,
+    float eY,
+    FLinearColor color,
+    float thickness
+  );
 };
 
-struct AHUD::Meta {
-  static constexpr inline Game::Function<void(AHUD::*)()> DrawHUD {
-    "?DrawHUD@AHUD@@UEAAXXZ", 0x2B8D350
-  };
+// clang-format off
+DEFINE_SYMBOL("?DrawHUD@AHUD@@UEAAXXZ", 0x2B8D350, void(AHUD::*)());
+DEFINE_SYMBOL("?DrawLine@AHUD@@QEAAXMMMMUFLinearColor@@M@Z", 0x2B8D420, void(AHUD::*)(float X, float Y, float eX, float eY, FLinearColor color, float thickness));
+// clang-format on
 
-  static constexpr inline Game::Function<void(AHUD::*)(float X, float Y, float eX, float eY, FLinearColor color, float thickness)> DrawLine {
-    "?DrawLine@AHUD@@QEAAXMMMMUFLinearColor@@M@Z", 0x2B8D420
-  };
-};
+forceinline void AHUD::DrawHUD() {
+  Game::CallSymbol<{ "?DrawHUD@AHUD@@UEAAXXZ" }>(this);
+}
 
-void AHUD::DrawLine(float X, float Y, float eX, float eY, FLinearColor color, float thickness) {
-  Meta::DrawLine(this, X, Y, eX, eY, color, thickness);
+forceinline void AHUD::DrawLine(
+  float X,
+  float Y,
+  float eX,
+  float eY,
+  FLinearColor color,
+  float thickness
+) {
+  Game::CallSymbol<{ "?DrawLine@AHUD@@QEAAXMMMMUFLinearColor@@M@Z" }>(
+    this, X, Y, eX, eY, color, thickness
+  );
 }

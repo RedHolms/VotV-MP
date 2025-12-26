@@ -1,24 +1,37 @@
 #pragma once
 
-#include "base.hpp"
-#include "FName.hpp"
+#include "Client/Game/FName.hpp"
+#include "Client/Game/Game.hpp"
+#include "Client/Game/UObjectBaseUtility.hpp"
 
 class UClass;
 
-class UObject {
+class UObject : public UObjectBaseUtility {
 public:
-  struct Meta;
-
-public:
-  inline UObject* CreateDefaultSubobject(FName subobjectFName, UClass* returnType, UClass* classToCreateByDefault, bool required, bool transient);
+  forceinline UObject* CreateDefaultSubobject(
+    FName subobjectFName,
+    UClass* returnType,
+    UClass* classToCreateByDefault,
+    bool required,
+    bool transient
+  );
 };
 
-struct UObject::Meta {
-  static constexpr inline Game::Function<UObject*(UObject::*)(FName subobjectFName, UClass* returnType, UClass* classToCreateByDefault, bool required, bool transient)> CreateDefaultSubobject {
-    "?CreateDefaultSubobject@UObject@@QEAAPEAV1@VFName@@PEAVUClass@@1_N2@Z", 0x13F1080
-  };
-};
+static_assert(sizeof(UObject) == 48);
 
-UObject* UObject::CreateDefaultSubobject(FName subobjectFName, UClass* returnType, UClass* classToCreateByDefault, bool required, bool transient) {
-  return Meta::CreateDefaultSubobject(this, subobjectFName, returnType, classToCreateByDefault, required, transient);
+// clang-format off
+DEFINE_SYMBOL("?CreateDefaultSubobject@UObject@@QEAAPEAV1@VFName@@PEAVUClass@@1_N2@Z", 0x13F1080, UObject*(UObject::*)(FName subobjectFName, UClass* returnType, UClass* classToCreateByDefault, bool required, bool transient));
+// clang-format on
+
+forceinline UObject* UObject::CreateDefaultSubobject(
+  FName subobjectFName,
+  UClass* returnType,
+  UClass* classToCreateByDefault,
+  bool required,
+  bool transient
+) {
+  return Game::CallSymbol<{
+    "?CreateDefaultSubobject@UObject@@QEAAPEAV1@VFName@@PEAVUClass@@1_N2@Z" }>(
+    this, subobjectFName, returnType, classToCreateByDefault, required, transient
+  );
 }

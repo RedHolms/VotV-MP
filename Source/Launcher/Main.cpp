@@ -1,25 +1,26 @@
-#include <Windows.h>
 #include <Shlwapi.h>
+#include <Windows.h>
 #include <stdio.h>
 
 static bool SetDebugPrivilege() {
   HANDLE token;
-
-  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token))
-    return false;
-
-  TOKEN_PRIVILEGES tp = {0};
-
-  if (!LookupPrivilegeValueA(nullptr, "SeDebugPrivilege", &tp.Privileges[0].Luid))
-    return false;
-
+  BOOL success;
+  TOKEN_PRIVILEGES tp = { 0 }, prevTp = { 0 };
   DWORD retSize;
-  TOKEN_PRIVILEGES prevPrivileges = {0};
+
+  success = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token);
+  if (!success)
+    return false;
+
+  success = LookupPrivilegeValueA(nullptr, "SeDebugPrivilege", &tp.Privileges[0].Luid);
+  if (!success)
+    return false;
 
   tp.PrivilegeCount = 1;
   tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-  if (!AdjustTokenPrivileges(token, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), &prevPrivileges, &retSize))
+  success = AdjustTokenPrivileges(token, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), &prevTp, &retSize);
+  if (!success)
     return false;
 
   CloseHandle(token);
@@ -54,10 +55,12 @@ static bool LocateMPLibrary(wchar_t* outPath) {
 }
 
 static void DoInject(HANDLE process, const wchar_t* dll) {
-  void* loc = VirtualAllocEx(process, nullptr, MAX_PATH * 2, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+  void* loc =
+    VirtualAllocEx(process, nullptr, MAX_PATH * 2, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
   size_t written = 0;
   WriteProcessMemory(process, loc, dll, (wcslen(dll) + 1) * 2, &written);
-  HANDLE thread = CreateRemoteThread(process, nullptr, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, loc, 0, nullptr);
+  HANDLE thread =
+    CreateRemoteThread(process, nullptr, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, loc, 0, nullptr);
   WaitForSingleObject(thread, INFINITE);
   CloseHandle(thread);
 }
@@ -65,18 +68,30 @@ static void DoInject(HANDLE process, const wchar_t* dll) {
 INT WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT) {
   wchar_t gamePath[MAX_PATH];
   if (!LocateGameBinary(gamePath)) {
-    MessageBoxW(nullptr, L"Не удалось найти исполняемый файл игры", L"VotV-MP | Ошибка запуска", MB_ICONERROR);
+    MessageBoxW(
+      nullhandle,
+      L"Не удалось найти исполняемый файл игры",
+      L"VotV-MP | Ошибка запуска",
+      MB_ICONERROR
+    );
     return 1;
   }
 
   wchar_t dllPath[MAX_PATH];
   if (!LocateMPLibrary(dllPath)) {
-    MessageBoxW(nullptr, L"Не удалось найти DLL онлайн игры", L"VotV-MP | Ошибка запуска", MB_ICONERROR);
+    MessageBoxW(
+      nullhandle, L"Не удалось найти DLL онлайн игры", L"VotV-MP | Ошибка запуска", MB_ICONERROR
+    );
     return 1;
   }
 
   if (!SetDebugPrivilege()) {
-    MessageBoxW(nullptr, L"Не удалось получить debug права для процесса", L"VotV-MP | Ошибка запуска", MB_ICONERROR);
+    MessageBoxW(
+      nullhandle,
+      L"Не удалось получить debug права для процесса",
+      L"VotV-MP | Ошибка запуска",
+      MB_ICONERROR
+    );
     return 1;
   }
 
@@ -88,9 +103,16 @@ INT WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT) {
   swprintf(cmdLine, sizeof(cmdLine), L"\"%s\" VotV", gamePath);
 
   BOOL success = CreateProcessW(
-    nullptr, cmdLine, nullptr, nullptr, FALSE,
+    nullptr,
+    cmdLine,
+    nullptr,
+    nullptr,
+    FALSE,
     NORMAL_PRIORITY_CLASS | DETACHED_PROCESS | CREATE_SUSPENDED,
-    nullptr, nullptr, &startupInfo, &processInfo
+    nullptr,
+    nullptr,
+    &startupInfo,
+    &processInfo
   );
 
   if (!success) {

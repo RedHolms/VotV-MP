@@ -13,9 +13,6 @@ struct IPv4 {
   uint32_t addr = 0;
 
   constexpr std::string ToString() const noexcept;
-
-  static constexpr IPv4 Unspecified = Parse("0.0.0.0");
-  static constexpr IPv4 LocalHost = Parse("127.0.0.1");
 };
 
 constexpr std::optional<IPv4> IPv4::Parse(std::string_view const& addr) noexcept {

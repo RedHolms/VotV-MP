@@ -1,19 +1,15 @@
 #pragma once
 
-#include "base.hpp"
+#include "Game.hpp"
 
 struct FMemory {
-  struct Meta;
-
-  static inline void Free(void* buffer);
+  forceinline static void Free(void* buffer);
 };
 
-struct FMemory::Meta {
-  static constexpr inline Game::Function<void(*)(void* buffer)> Free {
-    "?Free@FMemory@@SAXPEAX@Z", 0x115CCC0
-  };
-};
+// clang-format off
+DEFINE_SYMBOL("?Free@FMemory@@SAXPEAX@Z", 0x115CCC0, void(*)(void* buffer));
+// clang-format on
 
-void FMemory::Free(void* buffer) {
-  Meta::Free(buffer);
+forceinline void FMemory::Free(void* buffer) {
+  Game::CallSymbol<{ "?Free@FMemory@@SAXPEAX@Z" }>(buffer);
 }
