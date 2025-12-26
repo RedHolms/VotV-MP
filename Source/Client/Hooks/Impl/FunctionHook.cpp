@@ -20,24 +20,11 @@ void FunctionHooks::Impl::Install(
 
   void* funcPtr = reinterpret_cast<void*>(funcAddress);
 
-  Log::Verbose(
-    "Hooking function at {} (fistFreeSlot={}; relayAddr={}; relayPayload={})",
-    funcPtr,
-    funcInfo.firstFreeSlot,
-    relayAddr,
-    relayPayload
-  );
-
   if (!genPage) {
     GenerateCode(funcAddress, funcInfo, relayAddr, relayPayload);
 
     originalCode = std::make_unique<uint8_t[]>(hookSize);
     memcpy(originalCode.get(), funcPtr, hookSize);
-
-    Log::Verbose(" - Relay jumper was generated at {}; trampoline at {}", relayJumper, trampoline);
-    Log::Verbose(" - Hook size is {}; Original bytes:", hookSize);
-    for (size_t i = 0; i < hookSize; ++i)
-      Log::Verbose("    {:02X}", originalCode[i]);
   }
 
   DWORD previousProtection;

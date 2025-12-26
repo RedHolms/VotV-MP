@@ -1,7 +1,6 @@
 #include "Common.hpp"
 
 #include "Logging/Asserts.hpp"
-
 #include <hde64.h>
 
 size_t HooksCommon::CreateTrampoline(
